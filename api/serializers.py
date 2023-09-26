@@ -59,6 +59,7 @@ class CarrinhoComprasItemSerializer(serializers.ModelSerializer):
 
 class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
     itens = serializers.SerializerMethodField()
+    total_dolar = serializers.SerializerMethodField()
 
     class Meta:
         model = CarrinhoCompra
@@ -70,6 +71,12 @@ class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
             CarrinhoCompraItem.objects.filter(carrinho=obj).all(), many=True
         )
         return serializer.data
+
+    def get_total_dolar(self, obj: CarrinhoCompra):
+        # TODO: Implementar este método para converter o total em reais em uma api externa e retornar abaixo.
+        # Utilizar o campo `obj.valor_total` para enviar para a api.
+        # O resultado da api deve ser retornado abaixo.
+        return 0.00
 
 
 class CarrinhoComprasSerializer(serializers.ModelSerializer):
