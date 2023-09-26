@@ -1,3 +1,4 @@
+import requests
 from rest_framework import serializers
 
 from api.models import (
@@ -60,7 +61,7 @@ class CarrinhoComprasItemSerializer(serializers.ModelSerializer):
 class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
     itens = serializers.SerializerMethodField()
     total_dolar = serializers.SerializerMethodField()
-    CHAVE_API = 'c94b00ef414eb7272d1bcca0'
+    CHAVE_API = "c94b00ef414eb7272d1bcca0"
 
     class Meta:
         model = CarrinhoCompra
@@ -74,19 +75,15 @@ class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_total_dolar(self, obj: CarrinhoCompra):
-        url = f'https://v6.exchangerate-api.com/v6/{CHAVE_API}/latest/BRL'
+        url = f"https://v6.exchangerate-api.com/v6/{self.CHAVE_API}/latest/BRL"
 
         response = requests.get(url)
-        
-        if response.status_code == 200:
-           data = response.json()
-            
-           cotacao = data.get("conversion_rates").get("USD")
-           totalOutraMOeda = obj.valor_total * cota 
-            
-           return Response(totalOutraMOeda)
-        else:
-            return Response({'error': 'CEP inválido ou não encontrado'}, status=response.status_code)
+
+        data = response.json()
+        cotacao = data.get("conversion_rates").get("USD")
+        total_outra_moeda = obj.valor_total * cotacao
+        return total_outra_moeda
+
 
 class CarrinhoComprasSerializer(serializers.ModelSerializer):
     itens = CarrinhoComprasItemSerializer(many=True)
