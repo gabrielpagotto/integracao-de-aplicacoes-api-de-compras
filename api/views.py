@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from django.db.models import Q
 from api.helpers import create_url_path
+import requests
 
 from api.models import (
     AvaliacaoProduto,
@@ -170,14 +171,32 @@ class AvaliacaoProdutoViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return AvaliacaoProduto.objects.filter(produto_id=self.kwargs["id"])
 
 class ConsultasViewSet(viewsets.ViewSet):
-
     @action(detail=False, methods=['GET'], url_path=create_url_path('cep/:cep'))
     def cep(self, request, cep: str):
-        # TODO: Implementar método para realizar a busca do cep em uma api externa.
-        # Realizar a request no endpoint '/consultas/cep/xxxxxxxx'
-        # Retornar os dados abaixo como necessário
-        return Response({
-            'cep': 'xxxxx-xxx',
-            'rua': 'Rua tal',
-            # ... Adicionar todos os campos necessários.
-        })
+        
+        url = f'https://viacep.com.br/ws/{cep}/json/'
+
+        # Fazer a requisição GET para a URL e verificar se o status code é 200
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            cep = data['cep']
+            rua = data['logradouro']
+            bairro = data['bairro']
+            cidade = data['localidade']
+            estado = data['uf']
+
+            result = {
+            'cep': cep,
+            'rua': rua,
+            'bairro': bairro,
+            'cidade': cidade,
+            'estado': estado
+            }
+            
+            return Response(result)
+        else:
+        # Retornar uma resposta de erro se o status code não for 200
+            return Response({'error': 'CEP inválido ou não encontrado'}, status=response.status_code)
