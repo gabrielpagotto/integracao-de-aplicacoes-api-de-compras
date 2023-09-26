@@ -1,3 +1,4 @@
+import requests
 from rest_framework import serializers
 
 from api.models import (
@@ -60,6 +61,7 @@ class CarrinhoComprasItemSerializer(serializers.ModelSerializer):
 class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
     itens = serializers.SerializerMethodField()
     total_dolar = serializers.SerializerMethodField()
+    CHAVE_API = "c94b00ef414eb7272d1bcca0"
 
     class Meta:
         model = CarrinhoCompra
@@ -73,10 +75,14 @@ class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_total_dolar(self, obj: CarrinhoCompra):
-        # TODO: Implementar este método para converter o total em reais em uma api externa e retornar abaixo.
-        # Utilizar o campo `obj.valor_total` para enviar para a api.
-        # O resultado da api deve ser retornado abaixo.
-        return 0.00
+        url = f"https://v6.exchangerate-api.com/v6/{self.CHAVE_API}/latest/BRL"
+
+        response = requests.get(url)
+
+        data = response.json()
+        cotacao = data.get("conversion_rates").get("USD")
+        total_outra_moeda = obj.valor_total * cotacao
+        return total_outra_moeda
 
 
 class CarrinhoComprasSerializer(serializers.ModelSerializer):
