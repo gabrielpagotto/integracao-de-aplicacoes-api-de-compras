@@ -82,9 +82,9 @@ class CarrinhoComprasAtualSerializer(serializers.ModelSerializer):
            data = response.json()
             
            cotacao = data.get("conversion_rates").get("USD")
-           valOutraMoeda = obj.valor_total * cota 
+           totalOutraMOeda = obj.valor_total * cota 
             
-           return Response(valOutraMoeda)
+           return Response(totalOutraMOeda)
         else:
             return Response({'error': 'CEP inválido ou não encontrado'}, status=response.status_code)
 
