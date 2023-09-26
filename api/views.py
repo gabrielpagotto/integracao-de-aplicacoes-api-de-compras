@@ -1,8 +1,10 @@
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from django.db.models import Q
+from api.helpers import create_url_path
 
 from api.models import (
     AvaliacaoProduto,
@@ -166,3 +168,16 @@ class AvaliacaoProdutoViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return AvaliacaoProduto.objects.filter(produto_id=self.kwargs["id"])
+
+class ConsultasViewSet(viewsets.ViewSet):
+
+    @action(detail=False, methods=['GET'], url_path=create_url_path('cep/:cep'))
+    def cep(self, request, cep: str):
+        # TODO: Implementar método para realizar a busca do cep em uma api externa.
+        # Realizar a request no endpoint '/consultas/cep/xxxxxxxx'
+        # Retornar os dados abaixo como necessário
+        return Response({
+            'cep': 'xxxxx-xxx',
+            'rua': 'Rua tal',
+            # ... Adicionar todos os campos necessários.
+        })

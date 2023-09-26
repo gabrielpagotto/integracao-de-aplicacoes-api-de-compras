@@ -14,6 +14,7 @@ router.register(r"pedidos/atualizar", views.AtualizarPedidoViewSet)
 router.register(r"pedidos/cancelar", views.CancelarPedidoViewSet)
 router.register(r"pedidos", views.PedidoViewSet)
 router.register(r"usuarios", views.UsuarioViewSet)
+router.register(r"consultas", views.ConsultasViewSet, basename='consultas')
 
 urlpatterns = [
     path("", include(router.urls)),
